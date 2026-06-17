@@ -1,0 +1,35 @@
+kind: template
+name: "ASP.NET Minimal API"
+description: ".NET 8 minimal API. Serilog structured logging, health checks, OpenAPI/Swagger, multi-stage Dockerfile, GitHub Actions CI. Deploys to ECS Fargate."
+tech_stack: aspnet
+category: backend
+
+deploy:
+  type: terraform
+  path: ./infrastructure
+  pipeline: github-actions
+  entry: deploy.yml
+  branch: main
+
+parameters:
+  - name: service_name
+    label: Service Name
+    type: string
+    required: true
+  - name: environment
+    label: Environment
+    type: select
+    required: true
+    options: [{ value: dev, label: Development }, { value: test, label: Test }, { value: prod, label: Production }]
+    default: dev
+  - name: dotnet_version
+    label: .NET Version
+    type: select
+    options: ["8", "9"]
+    default: "8"
+
+requires:
+  - kind: secret
+    name: AWS_ACCESS_KEY_ID
+  - kind: secret
+    name: AWS_SECRET_ACCESS_KEY
